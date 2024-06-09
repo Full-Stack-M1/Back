@@ -4,12 +4,10 @@ const schema = new mongoose.Schema({
   content: {
     type: String,
     required: true,
-    unique: true,
     trim: true,
   },
   date: {
     type: String,
-    unique: true,
     trim: true,
   },
   user: {

@@ -28,8 +28,13 @@ module.exports = {
     const { id } = req.params;
     const userId = req.user.id;
     try {
-      const conversation = await Conversation.findById(id).populate("messages");
-      if (conversation.createdBy.toString() !== userId) {
+      const conversation = await Conversation.findById(id)
+        .populate({
+          path: "messages",
+          populate: { path: "user" },
+        })
+        .populate("createdBy");
+      if (conversation.createdBy._id.toString() !== userId) {
         return res.status(403).json({
           message: "You are not allowed to access this conversation",
           success: false,
@@ -56,9 +61,44 @@ module.exports = {
     }
   },
 
+  getconversationsByName: async (req, res) => {
+    const { name } = req.body;
+    try {
+      const conversations = await Conversation.find({
+        name: { $regex: `/${name}/` },
+      })
+        .populate({
+          path: "messages",
+          populate: { path: "user" },
+        })
+        .populate("createdBy");
+      if (conversations.length === 0) {
+        return res.status(404).json({
+          message: "Conversations not found",
+          success: false,
+        });
+      }
+      res.status(200).json({
+        conversations: conversations,
+        success: true,
+      });
+    } catch (error) {
+      console.error("Error fetching conversations:", error);
+      res.status(500).json({
+        message: "Internal server error",
+        success: false,
+      });
+    }
+  },
+
   getAllConversations: async (req, res) => {
     try {
-      const conversations = await Conversation.find();
+      const conversations = await Conversation.find()
+        .populate({
+          path: "messages",
+          populate: { path: "user" },
+        })
+        .populate("createdBy");
       res.status(200).json({
         conversations,
         success: true,

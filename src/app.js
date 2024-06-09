@@ -9,7 +9,6 @@ const mongoose = require("mongoose");
 const { swaggerUi, swaggerDocs } = require("./config/swagger.config.js");
 
 // MongoDB connection URL
-// TODO API: Replace the URL with your own MongoDB URL
 const mongoURL = `${process.env.MONGO_START}${process.env.MONGO_END}`;
 
 // Connect to MongoDB
