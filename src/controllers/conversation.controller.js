@@ -3,6 +3,7 @@ const Conversation = require("../models/conversation.model");
 module.exports = {
   createConversation: async (req, res) => {
     const { name, type, tag } = req.body;
+    console.log(type);
     const createdBy = req.user.id;
     try {
       const conversation = await Conversation.create({
@@ -61,20 +62,40 @@ module.exports = {
     }
   },
 
-  getconversationsByName: async (req, res) => {
-    const { name } = req.body;
+  getconversationsBySearchParam: async (req, res) => {
+    const { name, type, tag } = req.body;
+
     try {
-      const conversations = await Conversation.find({
-        name: { $regex: `/${name}/` },
-      })
+      let searchCriteria = {
+        name: { $regex: new RegExp(name, "i") },
+      };
+
+      if (type && type.length > 0) {
+        if (Array.isArray(type)) {
+          searchCriteria.type = { $in: type.map((t) => t.toUpperCase()) };
+        } else {
+          searchCriteria.type = type.toUpperCase();
+        }
+      }
+
+      if (tag && tag.length > 0) {
+        if (Array.isArray(tag)) {
+          searchCriteria.tag = { $in: tag.map((t) => t.toUpperCase()) };
+        } else {
+          searchCriteria.tag = tag.toUpperCase();
+        }
+      }
+      console.log(searchCriteria);
+      const conversations = await Conversation.find(searchCriteria)
         .populate({
           path: "messages",
           populate: { path: "user" },
         })
         .populate("createdBy");
+
       if (conversations.length === 0) {
         return res.status(404).json({
-          message: "Conversations not found",
+          message: "No conversation where found with this name",
           success: false,
         });
       }
