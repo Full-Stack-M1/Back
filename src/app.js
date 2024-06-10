@@ -4,6 +4,7 @@ require("dotenv").config();
 
 const router = require("./routes/index.js");
 const cors = require("cors");
+const axios = require("axios");
 
 const mongoose = require("mongoose");
 const { swaggerUi, swaggerDocs } = require("./config/swagger.config.js");
@@ -26,8 +27,15 @@ const initApplication = async () => {
   app.options(process.env.FRONTEND_URL, cors());
   app.use(express.json());
 
-  app.get("/", (req, res) => {
-    res.send("Welcome to my API");
+  app.get("/", async (req, res) => {
+    try {
+      const response = await axios.get("https://ifconfig.me/ip");
+      const ip = response.data.trim();
+      res.send(`Public IP address is: ${ip}`);
+    } catch (error) {
+      console.error("Error fetching IP address:", error);
+      res.status(500).send("Error fetching IP address");
+    }
   });
 
   app.use("/api", router);
