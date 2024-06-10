@@ -12,7 +12,7 @@ const isAuth = require("../middlewares/isAuth");
 
 router.post("/", isAuth, createConversation);
 router.get("/", isAuth, getAllConversations);
-router.get("/byname", isAuth, getconversationsBySearchParam);
+router.post("/search", isAuth, getconversationsBySearchParam);
 router.get("/:id", isAuth, getConversationById);
 router.put("/:id", isAuth, updateConversation);
 router.delete("/:id", isAuth, deleteConversation);

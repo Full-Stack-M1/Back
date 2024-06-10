@@ -8,7 +8,6 @@ const isAuth = async (req, res, next) => {
       success: false,
     });
   }
-  // console.log(req.headers.authorization.split(' '));
   // Extraire le token à partir de Bearer + un espace
   // slplit permet de transformer une châine de charactère en tableau séparé
   const token = req.headers.authorization.split(" ")[1];

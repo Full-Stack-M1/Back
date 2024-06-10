@@ -3,7 +3,6 @@ const Conversation = require("../models/conversation.model");
 module.exports = {
   createConversation: async (req, res) => {
     const { name, type, tag } = req.body;
-    console.log(type);
     const createdBy = req.user.id;
     try {
       const conversation = await Conversation.create({
@@ -85,7 +84,7 @@ module.exports = {
           searchCriteria.tag = tag.toUpperCase();
         }
       }
-      console.log(searchCriteria);
+
       const conversations = await Conversation.find(searchCriteria)
         .populate({
           path: "messages",
